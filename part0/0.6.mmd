@@ -1,0 +1,12 @@
+sequenceDiagram
+    participant browser
+    participant server
+
+    browser->>server: POST https://studies.cs.helsinki.fi/exampleapp/new_note_spa  
+    Note right of browser: Payload: { "content": "new note", "date": "2025-07-03T08:06:57.241Z" }
+    Note right of browser: The browser starts executing the JavaScript code that renders the new note in spa 
+    activate server
+    server-->>browser: {"message":"note created"}
+    deactivate server
+
+
