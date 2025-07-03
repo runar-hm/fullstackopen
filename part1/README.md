@@ -1,0 +1,1 @@
+soltions for part 1
