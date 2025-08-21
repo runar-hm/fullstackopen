@@ -1,9 +1,13 @@
 const blogsRouter = require('express').Router()
 const Blog = require('../models/blog')
 const User = require('../models/user')
-const jwt = require('jsonwebtoken')
 
 blogsRouter.get('/', async (req, res) => {
+  const user = await User.findById(req.user.id)
+  if (!user) {
+    return res.status(400).json({ error: 'userId missing or not valid' })
+  }
+  
   const blogs = await Blog.find({}).populate('user', { username : 1, fullName : 1})
   return res.json(blogs)
 })
@@ -21,6 +25,9 @@ blogsRouter.post('/', async (req, res) => {
   user.blogs = user.blogs.concat(savedBlog._id)
   await user.save()
 
+  delete user.blogs
+  savedBlog.user = user
+
   return res.status(201).json(savedBlog)
 
 })
@@ -37,28 +44,35 @@ blogsRouter.delete('/:id', async (req, res, next) => {
   res.status(204).end()
 })
 
-blogsRouter.put('/:id', async (request, response, next) => {
-  const id = request.params.id
+blogsRouter.put('/:id', async (req, res, next) => {
+  
+  const user = await User.findById(req.user.id)
+  if (!user) {
+    return res.status(400).json({ error: 'userId missing or not valid' })
+  }
+  
+  const id = req.params.id
 
-  const { url, title, likes } = request.body
+  const { url, title, likes } = req.body
 
   const blog = await Blog.findById(id)
 
   if (!blog) {
-    return response.status(404).end()
+    return res.status(404).end()
   }
 
   if (!url || !title){
-    return response.status(404).send('Update requires both url and title')
+    return res.status(404).send('Update requires both url and title')
   }
 
   blog.url = url 
   blog.title = title 
   blog.likes = likes
+  blog.user = user.id
 
   const updateResult = await blog.save()
 
-  return response.json(updateResult)
+  return res.json(updateResult)
 
 })
 
