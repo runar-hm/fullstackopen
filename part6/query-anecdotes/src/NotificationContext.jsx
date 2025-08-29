@@ -1,41 +1,44 @@
-import { createContext, useReducer, useContext } from 'react'
+import { createContext, useReducer, useContext } from "react";
 
-const notificationReducer =  ( state, action ) => {
-    console.log(action)
-    
-    switch(action.type) {
-        case 'SETMSG': {
-            console.log('setting msg', action.payload)
-            return state = action.payload
-        }
-        case 'CLEAR': {
-            return state = null
-        }
+const notificationReducer = (state, action) => {
+  console.log(action);
+
+  switch (action.type) {
+    case "SETMSG": {
+      console.log("setting msg", action.payload);
+      return (state = action.payload);
     }
-    return state
-}
+    case "CLEAR": {
+      return (state = null);
+    }
+  }
+  return state;
+};
 
-const NotificationContext = createContext()
+const NotificationContext = createContext();
 
-export const NotificationContextProvider = ( props ) => {
+export const NotificationContextProvider = (props) => {
+  const [notification, dispatchNotification] = useReducer(
+    notificationReducer,
+    ""
+  );
 
-    const [ notification, dispatchNotification ] = useReducer(notificationReducer, '')
-
-    return (
-        <NotificationContext.Provider value={[notification, dispatchNotification]}>
-            {props.children}
-        </NotificationContext.Provider>
-    )
-}
+  return (
+    <NotificationContext.Provider value={[notification, dispatchNotification]}>
+      {props.children}
+    </NotificationContext.Provider>
+  );
+};
 
 export const useNotificationValue = () => {
-    const valueAndDispatch = useContext(NotificationContext)
-    return valueAndDispatch[0]
-}
+  console.log(useContext(NotificationContext));
+  const valueAndDispatch = useContext(NotificationContext);
+  return valueAndDispatch[0];
+};
 
 export const useNotificationDispatch = () => {
-    const valueAndDispatch = useContext(NotificationContext)
-    return valueAndDispatch[1]
-}
+  const valueAndDispatch = useContext(NotificationContext);
+  return valueAndDispatch[1];
+};
 
-export default NotificationContext
+export default NotificationContext;

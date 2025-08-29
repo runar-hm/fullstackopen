@@ -2,6 +2,8 @@ import { useState } from 'react'
 import { BrowserRouter as Router, 
   Routes, Route, Link, useMatch, useNavigate
 } from 'react-router-dom'
+import { useField } from './hooks'
+
 
 const Menu = () => {
   const padding = {
@@ -17,8 +19,6 @@ const Menu = () => {
 }
 
 const Notification = ({ notification }) => {
-
-  console.log(notification)
   if (notification)
     return <div>{notification}</div>
 
@@ -40,8 +40,7 @@ const Anecdote = ({ anecdote }) => (
     <p> has {anecdote.votes} votes</p>
     <p> for more info see: {anecdote.url}</p>
   </div>
-  )
-
+)
 
 const About = () => (
   <div>
@@ -66,20 +65,29 @@ const Footer = () => (
 )
 
 const CreateNew = (props) => {
-  const [content, setContent] = useState('')
-  const [author, setAuthor] = useState('')
-  const [info, setInfo] = useState('')
-
+  const content = useField('text')
+  const author = useField('text')
+  const info = useField('text')
 
   const handleSubmit = (e) => {
     e.preventDefault()
+    console.log(props)
     props.addNew({
-      content,
-      author,
-      info,
+      content:content.fieldValues.value,
+      author:author.fieldValues.value,
+      info:info.fieldValues.value,
       votes: 0
     })
   }
+
+  const handleReset = (e) => {
+    e.preventDefault()
+    content.reset()
+    author.reset()
+    info.reset()
+  }
+
+
 
   return (
     <div>
@@ -87,17 +95,18 @@ const CreateNew = (props) => {
       <form onSubmit={handleSubmit}>
         <div>
           content
-          <input name='content' value={content} onChange={(e) => setContent(e.target.value)} />
+          <input {...content.fieldValues} />
         </div>
         <div>
           author
-          <input name='author' value={author} onChange={(e) => setAuthor(e.target.value)} />
+          <input {...author.fieldValues} />
         </div>
         <div>
           url for more info
-          <input name='info' value={info} onChange={(e)=> setInfo(e.target.value)} />
+          <input {...info.fieldValues} />
         </div>
-        <button>create</button>
+        <button type='submit'>create</button>
+        <button onClick={handleReset}>reset</button>
       </form>
     </div>
   )
@@ -122,7 +131,6 @@ const App = () => {
   ])
 
   const [notification, setNotification] = useState()
-  console.log(typeof notification)
   
   const navigate = useNavigate()
 
@@ -133,6 +141,7 @@ const App = () => {
 
   const addNew = (anecdote) => {
     anecdote.id = Math.round(Math.random() * 10000)
+    console.log(anecdote)
     setAnecdotes(anecdotes.concat(anecdote))
     navigate('/')
     setNotification(`A new anecdote ${anecdote.content} created!`)
