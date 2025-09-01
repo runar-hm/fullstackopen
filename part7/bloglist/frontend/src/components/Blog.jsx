@@ -1,21 +1,15 @@
-import { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { likeBlog, removeBlog } from '../reducers/blogReducer';
+import { useDispatch } from 'react-redux';
+import { likeBlog, removeBlog, commentBlog } from '../reducers/blogReducer';
 import { setNotification } from '../reducers/notificationReducer';
+import { List, ListItem, Stack, TextField, Button } from '@mui/material';
 
 const Blog = ({ blog, userCreated }) => {
-  const [expand, setExpand] = useState(false);
-
   const dispatch = useDispatch();
-
-  const toggleExpand = () => {
-    setExpand(!expand);
-  };
 
   const handleLike = () => {
     try {
       dispatch(likeBlog(blog));
-      dispatch(setNotification(`You liked blog ${blog.content}`, 5, 'info'));
+      dispatch(setNotification(`You liked blog ${blog.title}`, 5, 'info'));
     } catch {
       dispatch(
         setNotification(
@@ -40,12 +34,14 @@ const Blog = ({ blog, userCreated }) => {
     }
   };
 
-  const blogStyle = {
-    paddingTop: 10,
-    paddingLeft: 2,
-    border: 'solid',
-    borderWidth: 1,
-    marginBottom: 5,
+  const handleComment = (e) => {
+    e.preventDefault();
+    const comment = e.target.comment.value;
+    try {
+      dispatch(commentBlog(blog.id, comment));
+    } catch (exception) {
+      setNotification('Error. Comment not registered', 5, 'error');
+    }
   };
 
   const blogHeader = (
@@ -55,34 +51,28 @@ const Blog = ({ blog, userCreated }) => {
     </p>
   );
 
-  const expandedBlog = (
-    <>
-      {blogHeader}
-      <p className="blogUrl">{blog.url}</p>
+  return (
+    <Stack>
+      <h2>{blogHeader}</h2>
+      <p className="blogUrl">URL to blog: {blog.url}</p>
       <div className="blogLikes">
         {blog.likes}
         <button onClick={handleLike}>like</button>
       </div>
-      <p className="userFullName"> {blog.user.fullName}</p>
-      <button id="expandBtn" onClick={toggleExpand}>
-        hide
-      </button>
+      <p className="userFullName">Full name: {blog.user.fullName}</p>
       {userCreated && <button onClick={handleDelete}>delete</button>}
-    </>
-  );
 
-  const contractedBlog = (
-    <>
-      {blogHeader}
-      <button onClick={toggleExpand}>expand</button>
-    </>
-  );
-
-  return (
-    <div style={blogStyle}>
-      {expand && expandedBlog}
-      {!expand && contractedBlog}
-    </div>
+      <h3>Comments</h3>
+      <List>
+        {blog.comments.map((c, i) => (
+          <ListItem key={i}>{c}</ListItem>
+        ))}
+      </List>
+      <Stack component="form" sx={{}} spacing={1} onSubmit={handleComment}>
+        <TextField type="text" placeholder="comment" name="comment"></TextField>
+        <Button type="submit">submit</Button>
+      </Stack>
+    </Stack>
   );
 };
 

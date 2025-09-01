@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { setNotification } from '../reducers/notificationReducer';
-import blogService from '../services/blogs';
 import { useDispatch } from 'react-redux';
 import { addBlog } from '../reducers/blogReducer';
+
+import { TextField, Button } from '@mui/material';
 
 const BlogForm = ({ blogFormRef }) => {
   const [newBlog, setNewBlog] = useState({
@@ -18,7 +19,7 @@ const BlogForm = ({ blogFormRef }) => {
     try {
       dispatch(addBlog(newBlog));
       dispatch(
-        setNotification(`Blog posted with title ${newBlog.title}`, 5, 'info')
+        setNotification(`Blog posted with title ${newBlog.title}`, 5, 'success')
       );
       //  blogFormRef.current.toggleVisibility();
     } catch (exception) {
@@ -42,43 +43,41 @@ const BlogForm = ({ blogFormRef }) => {
   return (
     <div>
       <form onSubmit={handleSubmit}>
-        <div>
-          title:
-          <input
-            placeholder="title"
-            type="text"
-            name="title"
-            value={newBlog.title}
-            onChange={({ target }) =>
-              setNewBlog({ ...newBlog, title: target.value })
-            }
-          ></input>
-        </div>
-        <div>
-          author:
-          <input
-            placeholder="author"
-            type="text"
-            name="author"
-            value={newBlog.author}
-            onChange={({ target }) =>
-              setNewBlog({ ...newBlog, author: target.value })
-            }
-          ></input>
-        </div>
-        <div>
-          url:
-          <input
-            placeholder="url"
-            type="text"
-            name="author"
-            value={newBlog.url}
-            onChange={({ target }) =>
-              setNewBlog({ ...newBlog, url: target.value })
-            }
-          ></input>
-        </div>
-        <button type="submit">submit</button>
+        <TextField
+          placeholder="title"
+          type="text"
+          name="title"
+          label="title"
+          value={newBlog.title}
+          onChange={({ target }) =>
+            setNewBlog({ ...newBlog, title: target.value })
+          }
+        ></TextField>
+        <TextField
+          placeholder="author"
+          type="text"
+          label="author"
+          name="author"
+          value={newBlog.author}
+          onChange={({ target }) =>
+            setNewBlog({ ...newBlog, author: target.value })
+          }
+        ></TextField>
+
+        <TextField
+          placeholder="url"
+          type="text"
+          label="url"
+          name="author"
+          value={newBlog.url}
+          onChange={({ target }) =>
+            setNewBlog({ ...newBlog, url: target.value })
+          }
+        ></TextField>
+
+        <Button type="submit" variant="contained" color="primary">
+          submit
+        </Button>
       </form>
     </div>
   );

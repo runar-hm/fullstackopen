@@ -1,12 +1,10 @@
-import { useDispatch } from 'react-redux';
-import { setMsg, setMsgType, clearMsg } from '../reducers/notificationReducer';
-
+import { Alert } from '@mui/material';
 const Notification = ({ msg, type }) => {
   if (!msg) return null;
   return (
-    <div className={type || 'info'}>
+    <Alert severity={type} fontSize="inherit" className={type || 'info'}>
       <p>{msg}</p>
-    </div>
+    </Alert>
   );
 };
 

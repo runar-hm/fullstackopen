@@ -1,36 +1,30 @@
-import { useEffect, useRef } from 'react';
+import { Container } from '@mui/material';
+
+import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import BlogList from './components/BlogList';
-import BlogForm from './components/BlogForm';
 import Notification from './components/Notification';
-import Togglable from './components/Togglable';
+
+import Navbar from './components/Navbar';
 import LoginForm from './components/LoginForm';
 
 import blogService from './services/blogs';
 
 import { setBlogs } from './reducers/blogReducer';
-import { setUser, logout } from './reducers/userReducer';
+
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+
+import Home from './pages/Home';
+import Users from './pages/Users';
+import User from './pages/User';
+import Blogpage from './pages/Blogpage';
 
 const App = () => {
   const user = useSelector((state) => state.user);
   const msg = useSelector((state) => state.notification.msg);
   const msgType = useSelector((state) => state.notification.type);
 
-  const blogFormRef = useRef();
-
   const dispatch = useDispatch();
-
-  useEffect(() => {
-    const raw = window.localStorage.getItem('loggedBlogUser');
-    if (raw) {
-      const parsed = JSON.parse(raw);
-      dispatch(setUser(parsed));
-      blogService.setToken(parsed.token);
-    } else {
-      blogService.setToken(null);
-    }
-  }, []);
 
   useEffect(() => {
     if (user) {
@@ -38,17 +32,9 @@ const App = () => {
     }
   }, [user]);
 
-  const handleLogout = (event) => {
-    event.preventDefault();
-    window.localStorage.removeItem('loggedBlogUser');
-    blogService.setToken(null);
-    dispatch(logout());
-  };
-
   if (!user) {
     return (
       <div>
-        <h2>Log in</h2>
         <Notification msg={msg} type={msgType} />
         <LoginForm />
       </div>
@@ -56,24 +42,20 @@ const App = () => {
   }
 
   return (
-    <div>
-      <h2>Blogs App</h2>
-      <Notification msg={msg} type={msgType} />
-      <div>
-        <p>Logged in as: {user.username} </p>
-        <button onClick={handleLogout}>log out</button>
-      </div>
+    <Container>
+      <Router>
+        <Navbar />
+        <h2>Blogs App</h2>
+        <Notification msg={msg} type={msgType} />
 
-      <div>
-        Blog
-        <Togglable buttonLabel="Add new blog" ref={blogFormRef}>
-          <BlogForm blogFormRef={blogFormRef} />
-        </Togglable>
-      </div>
-
-      <h3>Blogs</h3>
-      <BlogList user={user} />
-    </div>
+        <Routes>
+          <Route path="/" element={<Home user={user} />} />
+          <Route path="/users" element={<Users />} />
+          <Route path="/users/:id" element={<User />} />
+          <Route path="/blogs/:id" element={<Blogpage />} />
+        </Routes>
+      </Router>
+    </Container>
   );
 };
 

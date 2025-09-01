@@ -1,40 +1,45 @@
-const bcrypt = require('bcrypt')
-const usersRouter = require('express').Router()
-const User = require('../models/user')
+const bcrypt = require("bcrypt");
+const usersRouter = require("express").Router();
+const User = require("../models/user");
 
-usersRouter.get('/', async (req, res) => {
-    const users = await User.find({}).populate('blogs')
-    return res.json(users || [])
-})
+usersRouter.get("/", async (req, res) => {
+  const users = await User.find({}).populate("blogs");
+  return res.json(users || []);
+});
 
-usersRouter.post('/', async (req, res) => {
-    const { username, fullName, password } = req.body 
+usersRouter.get("/:id", async (req, res) => {
+  const id = req.params.id;
+  const user = await User.findById(id).populate("blogs");
+  return res.json(user);
+});
 
-    const pwValidtor = (pw) => {
-        minLenght = 6
-        // add more validation later :-) 
+usersRouter.post("/", async (req, res) => {
+  const { username, fullName, password } = req.body;
 
-        return true ? (pw.length >= minLenght) : false
-    }
+  const pwValidtor = (pw) => {
+    minLenght = 6;
+    // add more validation later :-)
 
-    if (!pwValidtor(password)){
-        console.log(pwValidtor(password))
-        return res.status(404).json('password sucks')
-    }
+    return true ? pw.length >= minLenght : false;
+  };
 
-    const saltRounds = 10
-    const pwHash = await bcrypt.hash(password, saltRounds)
-    
-    const user = new User({
-        username: username,
-        fullName: fullName,
-        pwHash: pwHash
-    })
+  if (!pwValidtor(password)) {
+    console.log(pwValidtor(password));
+    return res.status(404).json("password sucks");
+  }
 
-    const savedUser = await user.save()
+  const saltRounds = 10;
+  const pwHash = await bcrypt.hash(password, saltRounds);
 
-    return res.status(201).json(savedUser)
+  const user = new User({
+    username: username,
+    fullName: fullName,
+    pwHash: pwHash,
+  });
 
-})
+  const savedUser = await user.save();
 
-module.exports = usersRouter
+  return res.status(201).json(savedUser);
+});
+
+module.exports = usersRouter;

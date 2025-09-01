@@ -44,9 +44,22 @@ export const likeBlog = (blog) => {
 
 export const removeBlog = (blog) => {
   return async (dispatch) => {
-    const res = await blogService.remove(blog);
-
+    await blogService.remove(blog);
     dispatch(deleteBlog(blog));
+  };
+};
+
+export const fetchBlog = (id) => {
+  return async (dispatch) => {
+    const res = await blogService.getOne(id);
+    dispatch(createBlog(res));
+  };
+};
+
+export const commentBlog = (id, comment) => {
+  return async (dispatch) => {
+    const res = await blogService.createComment(id, comment);
+    dispatch(updateBlog(res));
   };
 };
 

@@ -1,23 +1,6 @@
 import axios from 'axios';
+import { getConfig } from './requests';
 const baseUrl = '/api/blogs';
-
-let token = null;
-
-const setToken = (newToken) => {
-  newToken ? (token = newToken) : (token = null);
-};
-
-const getConfig = () => {
-  const config = token
-    ? {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    : {};
-
-  return config;
-};
 
 const getAll = () => {
   const config = getConfig();
@@ -51,4 +34,20 @@ const remove = async (blog) => {
   return res;
 };
 
-export default { setToken, getAll, create, update, remove };
+const getOne = async (id) => {
+  const config = getConfig();
+  const res = await axios.get(`${baseUrl}/${id}`, config);
+  return res.data;
+};
+
+const createComment = async (id, comment) => {
+  const config = getConfig();
+  const res = await axios.post(
+    `${baseUrl}/${id}/comments`,
+    { comment },
+    config
+  );
+  return res.data;
+};
+
+export default { createComment, getOne, getAll, create, update, remove };
