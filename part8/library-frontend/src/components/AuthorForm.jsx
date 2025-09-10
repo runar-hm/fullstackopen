@@ -6,8 +6,6 @@ const AuthorForm = ({ all_authors }) => {
   const [name, setName] = useState('');
   const [year, setYear] = useState('');
 
-  console.log(all_authors);
-
   const [editAuthor, result] = useMutation(EDIT_AUTHOR, {
     refetchQueries: [{ query: ALL_AUTHORS }],
   });
@@ -43,9 +41,6 @@ const AuthorForm = ({ all_authors }) => {
         default={all_authors[0]}
       >
         {all_authors.map((a, idx) => {
-          {
-            console.log(a.name);
-          }
           return (
             <option key={idx} value={a.name}>
               {a.name}test
