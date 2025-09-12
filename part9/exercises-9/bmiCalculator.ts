@@ -28,13 +28,15 @@ export const bmiCalc = (height: number, mass: number): string => {
   }
 };
 
-try {
-  const { h, w } = parseArgs(process.argv);
-  console.log(bmiCalc(h, w));
-} catch (error: unknown) {
-  let errorMessage = 'Something bad happened';
-  if (error instanceof Error) {
-    errorMessage += ' Error: ' + error.message;
+if (require.main === module) {
+  try {
+    const { h, w } = parseArgs(process.argv);
+    console.log(bmiCalc(h, w));
+  } catch (error: unknown) {
+    let errorMessage = 'Something bad happened';
+    if (error instanceof Error) {
+      errorMessage += ' Error: ' + error.message;
+    }
+    console.log(errorMessage);
   }
-  console.log(errorMessage);
 }

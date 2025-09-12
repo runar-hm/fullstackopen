@@ -12,7 +12,7 @@ const parseArgs = (args: string[]): InputValues => {
   const target = Number(args[2]);
   const exerciseHours = args
     .map((i, idx) => (idx > 2 ? Number(i) : NaN))
-    .filter((i, idx) => idx > 2);
+    .filter((_i, idx) => idx > 2);
 
   return { target, exerciseHours };
 };
@@ -48,7 +48,12 @@ const calcRatingDescr = (rating: Rating): string => {
   }
 };
 
-const calcExerciseHours = (target: number, hours: number[]): weeklyResult => {
+export const calcExerciseHours = (
+  target: number,
+  hours: number[]
+): weeklyResult => {
+  console.log(target);
+  console.log(hours);
   const periodLength = hours.length;
   const trainingDays = hours.filter((h) => h > 0).length;
 
@@ -67,14 +72,15 @@ const calcExerciseHours = (target: number, hours: number[]): weeklyResult => {
     average,
   };
 };
-
-try {
-  const { target, exerciseHours } = parseArgs(process.argv);
-  console.log(calcExerciseHours(target, exerciseHours));
-} catch (error: unknown) {
-  let errorMessage = 'Something bad happened.';
-  if (error instanceof Error) {
-    errorMessage += 'Error: ' + error.message;
+if (require.main === module) {
+  try {
+    const { target, exerciseHours } = parseArgs(process.argv);
+    console.log(calcExerciseHours(target, exerciseHours));
+  } catch (error: unknown) {
+    let errorMessage = 'Something bad happened.';
+    if (error instanceof Error) {
+      errorMessage += 'Error: ' + error.message;
+    }
+    console.log(errorMessage);
   }
-  console.log(errorMessage);
 }
